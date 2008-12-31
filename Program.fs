@@ -7,9 +7,9 @@ open System.Xml
 let xml = "
 <Configuration>
   <IncludeDirectories>
-    <Directory Name='C:\Archive' Alias='Archive'/>
-    <Directory Name='C:\SchemaVersions' Alias='Current'/>
-    <Directory Name='C:\UpgradeScripts'/>
+    <Directory Name='C:\Temp\Archive'/>
+    <Directory Name='C:\Temp\SchemaVersions'/>
+    <Directory Name='C:\Temp\UpgradeScripts'/>
   </IncludeDirectories>
 
   <DatabaseGroup Name='sql'>
@@ -25,7 +25,7 @@ let parse (xml : string) =
    let doc = new XmlDocument()
    doc.LoadXml(xml)
    let directories = directories doc
-   Seq.iter (fun (d : Directory) -> printfn "Path is %s; Alias is %s" d.Name d.Alias) directories
+   Seq.iter (fun (d : Directory) -> printfn "Path is %s" d.Name) directories
    let database_groups = database_groups doc
    Seq.iter (fun (g : DatabaseGroup) -> 
                 printfn "Database Group Name:%s" g.Name
@@ -41,3 +41,9 @@ let parse (xml : string) =
    ()
 
 parse xml
+
+//let db = new Database("LarryTest", "phiv5dbdev", DatabaseType.Oracle, "LarryTest", "changeme", "SchemaInfo")
+//db.LoadSchemaVersion() 
+//db.SchemaVersion |> printfn "YO: %s" 
+
+//System.Console.ReadLine() |> ignore

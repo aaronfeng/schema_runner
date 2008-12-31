@@ -4,16 +4,23 @@ module LRF.SchemaRunner.Forms
 open System
 open System.Drawing
 open System.Windows.Forms
+open LRF.SchemaRunner.Core
+          
+type FileItem (f : File) = 
+    inherit TreeNode(f.Name)
 
+type DirectoryItem (d : Directory) = 
+    inherit TreeNode(d.Name)
+    
 type Tree() as self =
     class
         inherit TreeView(Dock = DockStyle.Fill)
         do self.Nodes.Add("test") |> ignore
-end
+    end
       
 type MainForm() as self = 
     class 
-        inherit Form(Text = "F# SchemaRunner", Width = 786, Height = 560, MinimumSize = new Size(500, 300)) 
+        inherit Form(Text = "F# SchemaRunner", Width = 780, Height = 560, MinimumSize = new Size(500, 300)) 
         let directory_tree = new Tree()
         let database_tree = new Tree()
 
@@ -38,13 +45,13 @@ type MainForm() as self =
         do self.Show()
     end 
     
-let form = new MainForm()
-
-#if INTERACTIVE
-form.Show()
-#endif
-
-#if COMPILED
-[<STAThread>]
-do Application.Run(form)
-#endif
+//let form = new MainForm()
+//
+//#if INTERACTIVE
+//form.Show()
+//#endif
+//
+//#if COMPILED
+//[<STAThread>]
+//do Application.Run(form)
+//#endif
