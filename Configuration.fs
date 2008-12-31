@@ -49,10 +49,12 @@ let directories_nodes (doc : XmlDocument) =
 
 /// Convert a XmlNode into a Directory class
 let node_to_directory (node : XmlNode) =
-   let path = match node.Attributes.["Name"] with
-                     | null  -> null
-                     | name  -> name.Value
-   new Directory(path)
+   let path, alias = match node.Attributes.["Name"],
+                           node.Attributes.["Alias"] with
+                     | null, null  -> null, null
+                     | name, null  -> name.Value, null
+                     | name, alias -> name.Value, alias.Value
+   new Directory(path, alias)
 
 /// Retrieve all the directories defined in the XmlDocument
 let directories (doc : XmlDocument) =
