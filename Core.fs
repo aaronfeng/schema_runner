@@ -65,12 +65,16 @@ type DatabaseGroup(name : string, databases : Database seq option) =
         member self.Databases with get() = databases    
     end
 
-type Directory(name : string, alias : string) = 
+type File (name : string) =
+    class
+        member self.Name with get() = Path.GetFileName(name);
+    end
+    
+type Directory(name : string) = 
     class
         let mutable files : FileInfo list option = None
       
         member self.Name  with get() = name
-        member self.Alias with get() = alias
         member self.Files with get() = files
       
         member self.LoadSqlFiles() =
