@@ -64,22 +64,3 @@ type DatabaseGroup(name : string, databases : Database seq option) =
         member self.Name with get() = name
         member self.Databases with get() = databases    
     end
-
-type File (name : string) =
-    class
-        member self.Name with get() = Path.GetFileName(name);
-    end
-    
-type Directory(name : string) = 
-    class
-        let mutable files : FileInfo list option = None
-      
-        member self.Name  with get() = name
-        member self.Files with get() = files
-      
-        member self.LoadSqlFiles() =
-             let directory_info = new DirectoryInfo(name)
-             let file_infos = directory_info.GetFiles("*.sql") |> Array.to_list
-             files <- Some(file_infos)
-             ()
-    end

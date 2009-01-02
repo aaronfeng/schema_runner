@@ -31,6 +31,13 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Core.fs" />
+    <Compile Include="Configuration.fs" />
+    <Compile Include="Forms.fs" />
+    <Compile Include="Program.fs" />
+    <Content Include="SchemaInfo.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -55,12 +62,6 @@
       <Name>System.Xml</Name>
       <AssemblyName>System.XML.dll</AssemblyName>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Core.fs" />
-    <Compile Include="Configuration.fs" />
-    <Compile Include="Forms.fs" />
-    <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

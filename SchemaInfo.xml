@@ -1,0 +1,14 @@
+<Configuration>
+  <IncludeDirectories>
+    <Directory Name='C:\TEMP\Current\'/>
+    <Directory Name='C:\TEMP\Archive\'/>
+  </IncludeDirectories>
+
+  <DatabaseGroup Name='sql'>
+    <Database Name='Test1' Server='localhost' Type='MsSql' User='sa' Password='sa' SchemaTable='SchemaInfo'/>
+  </DatabaseGroup>
+  
+  <DatabaseGroup Name='oracle'>
+    <Database Name='Test1' Server='localhost' Type='Oracle' User='Test1' Password='test1' SchemaTable='SchemaInfo'/>
+  </DatabaseGroup>
+</Configuration>

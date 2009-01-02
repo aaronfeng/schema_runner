@@ -45,16 +45,24 @@ let database_groups (doc : XmlDocument) =
 
 /// Selects the Directory nodes in XmlDocument via XPath 
 let directories_nodes (doc : XmlDocument) =
-   doc.SelectNodes "/IncludeDirectories/*"
+   doc.SelectNodes "/Configuration/IncludeDirectories/*"
 
 /// Convert a XmlNode into a Directory class
 let node_to_directory (node : XmlNode) =
    let path = match node.Attributes.["Name"] with
-                     | null  -> null
-                     | name  -> name.Value
-   new Directory(path)
+              | null  -> null
+              | name  -> name.Value
+   new System.IO.DirectoryInfo(path)
 
 /// Retrieve all the directories defined in the XmlDocument
 let directories (doc : XmlDocument) =
    directories_nodes doc
    |> translate node_to_directory
+   
+let all_include_directories(config_file : string) =
+    // TODO: clean this up
+    let doc = new XmlDocument()
+    let reader = new System.IO.StreamReader(config_file);
+    doc.LoadXml(reader.ReadToEnd())
+    directories doc
+    |> Seq.to_list
