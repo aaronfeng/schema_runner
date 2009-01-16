@@ -46,9 +46,9 @@ type SchemaItem  =
                       directories 
     end
  
-type Tree(directories : DirectoryInfo list option) as self =
+type SchemaTree(directories : DirectoryInfo list option) as self =
     class
-        inherit TreeView(Dock = DockStyle.Fill)
+        inherit TreeView(Dock = DockStyle.Fill, CheckBoxes = true)
         let dirs = match directories with
                    | Some(d) -> d
                    | None    -> List.empty
@@ -57,18 +57,40 @@ type Tree(directories : DirectoryInfo list option) as self =
                         let schema_item = new SchemaItem(DirectoryNode(d))
                         schema_item.Refresh()
                         self.Nodes.Add(schema_item) 
-                        |> ignore
-                        ())
+                        |> ignore)
                      dirs
+    end
+    
+type DatabaseTree(database_groups : DatabaseGroup list option) as self = 
+    class
+         inherit TreeView(Dock = DockStyle.Fill, CheckBoxes = true)
+         let groups = match database_groups with
+                      | Some(g) -> g
+                      | None    -> List.empty
+                      
+         let x = groups.Head.Name
+         
+         do List.iter (fun (g : DatabaseGroup) ->
+                        let parent = new TreeNode(Text = g.Name, Tag = g)
+                        self.Nodes.Add(parent) |> ignore
+                        g.Databases.Value |> Seq.iter (fun (d : Database) -> 
+                                                        d.LoadSchemaVersion() 
+                                                        new TreeNode(Text = d.Name, Tag = d) |> parent.Nodes.Add |> ignore))
+                      groups
     end
       
 type MainForm() as self = 
     class 
         inherit Form(Text = "F# SchemaRunner", Width = 780, Height = 560, MinimumSize = new Size(500, 300)) 
-        let include_directories = all_include_directories "SchemaRunner.xml"
         
-        let directory_tree = new Tree(Some(include_directories))
-        let database_tree = new Tree(None)
+        let config = get_config  "SchemaInfo.xml"
+        let directory_tree = match config.Directories with
+                             | Some(d) -> new SchemaTree(Some(config.Directories.Value))
+                             | None    -> new SchemaTree(None)
+                             
+        let database_tree = match config.DatabaseGroups with
+                            | Some(d) -> new DatabaseTree(Some(config.DatabaseGroups.Value))
+                            | None    -> new DatabaseTree(None)
 
         let vertical_split as v = new SplitContainer(Orientation = Orientation.Vertical,
                                                      Dock = DockStyle.Fill,

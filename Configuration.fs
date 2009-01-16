@@ -2,7 +2,14 @@
 module LRF.SchemaRunner.Configuration
 open LRF.SchemaRunner.Core
 open System.Xml
+open System.IO
 
+type Configuration(directories : DirectoryInfo list option, database_groups : DatabaseGroup list option) =
+    class
+        member self.Directories with get() = directories
+        member self.DatabaseGroups with get() = database_groups
+    end
+    
 /// Generic translation function that translates XmlNodeList into Seq type of returned by fn
 let translate fn (nodes : XmlNodeList) =
    nodes
@@ -36,7 +43,10 @@ let node_to_database_groups (node : XmlNode) =
    let name = match node.Attributes.["Name"] with
               | null -> null
               | name -> name.Value
-   new DatabaseGroup(name, Some(databases node.ChildNodes))
+   match node.ChildNodes.Count with
+   | 0  -> new DatabaseGroup(name, None)
+   | _ -> new DatabaseGroup(name, Some(databases node.ChildNodes)) 
+   
 
 /// Retrieve all the database groups defined in the XmlDocument
 let database_groups (doc : XmlDocument) =
@@ -59,10 +69,9 @@ let directories (doc : XmlDocument) =
    directories_nodes doc
    |> translate node_to_directory
    
-let all_include_directories(config_file : string) =
+let get_config(config_file : string) =
     // TODO: clean this up
+    let reader = new StreamReader(config_file);
     let doc = new XmlDocument()
-    let reader = new System.IO.StreamReader(config_file);
     doc.LoadXml(reader.ReadToEnd())
-    directories doc
-    |> Seq.to_list
+    new Configuration(Some(directories(doc) |> Seq.to_list), Some(database_groups(doc) |> Seq.to_list))
