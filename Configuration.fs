@@ -14,8 +14,9 @@ type Configuration(directories : DirectoryInfo list option, database_groups : Da
 let translate fn (nodes : XmlNodeList) =
    nodes
    |> Seq.cast<XmlNode>
+   |> Seq.filter (fun node -> node.NodeType <> XmlNodeType.Comment)
    |> Seq.map (fun node -> fn node)
-
+                              
 /// Selects the DatabaseGroup nodes in XmlDocument via XPath    
 let database_groups_nodes (doc : XmlDocument) =
    doc.SelectNodes "//DatabaseGroup"

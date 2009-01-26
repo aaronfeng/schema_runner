@@ -73,11 +73,13 @@ type DatabaseTree(database_groups : DatabaseGroup list option) as self =
          do List.iter (fun (g : DatabaseGroup) ->
                         let parent = new TreeNode(Text = g.Name, Tag = g)
                         self.Nodes.Add(parent) |> ignore
-                        g.Databases.Value |> Seq.iter (fun (d : Database) -> 
-                                                        d.LoadSchemaVersion() 
-                                                        match d.SchemaVersion with
-                                                        | "" | null -> new TreeNode(Text = "[" + d.Name + "]", Tag = d) |> parent.Nodes.Add |> ignore
-                                                        | _ -> new TreeNode(Text = d.SchemaVersion + " " + d.Name, Tag = d) |> parent.Nodes.Add |> ignore))
+                        match g.Databases with 
+                        | None -> ()
+                        | Some(d) -> d |> Seq.iter (fun (d : Database) -> 
+                                                      d.LoadSchemaVersion() 
+                                                      match d.SchemaVersion with
+                                                      | "" | null -> (new TreeNode(Text = "[" + d.Name + "]", Tag = d) |> parent.Nodes.Add |> ignore)
+                                                      | _ -> (new TreeNode(Text = d.SchemaVersion + " " + d.Name, Tag = d) |> parent.Nodes.Add |> ignore)))
                       groups
     end
       
