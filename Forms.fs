@@ -26,18 +26,21 @@ type SchemaItem  =
         
         member self.Refresh() = 
             let dir = self.Tag :?> DirectoryInfo
-            let files = dir.GetFiles("*.sql") |> Array.to_list
+            let files, directories = match dir.Exists with
+                                     | true -> dir.GetFiles("*.sql") 
+                                               |> Array.to_list, 
+                                               dir.GetDirectories() 
+                                               |> Array.to_list 
+                                               |> List.filter (fun dir -> (dir.Attributes &&& FileAttributes.Hidden) <> FileAttributes.Hidden)
+                                     | false -> List.empty, List.empty
+                                          
             List.iter (fun (file_info : FileInfo) -> 
                         let make_file(file_info : FileInfo) = new SchemaItem(FileNode(file_info))
                         let schema_file = make_file file_info
                         self.Nodes.Add(schema_file)
                         |> ignore)
                       files
-                      
-            let directories = dir.GetDirectories() 
-                              |> Array.to_list 
-                              |> List.filter (fun dir -> (dir.Attributes &&& FileAttributes.Hidden) <> FileAttributes.Hidden)
-                
+                                     
             List.iter (fun dir ->
                         let directory_node = new SchemaItem(DirectoryNode(dir))
                         directory_node.Refresh()
